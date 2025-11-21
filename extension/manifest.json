@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Algo-Mate Data Collector",
+  "version": "0.1",
+  "description": "백준 문제 풀이 데이터를 수집합니다.",
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.acmicpc.net/*", "https://solved.ac/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.acmicpc.net/status*"],
+      "js": ["content.js"]
+    }
+  ]
+}
