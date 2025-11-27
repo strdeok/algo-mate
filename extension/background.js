@@ -14,7 +14,6 @@ function getUserIdFromStorage() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "SAVE_WRONG_ANSWER") {
     console.log(`🔴 [Step 1] 메시지 수신: ${request.data.problemId}번`);
-    // processData 대신 processWrongAnswer 호출로 변경 (중요!)
     processWrongAnswer(request.data);
   }
 });
