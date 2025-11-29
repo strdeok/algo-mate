@@ -37,3 +37,12 @@ export const githubLogin = async () => {
     return null;
   }
 };
+
+export const logout = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    return { error };
+  } catch (error) {
+    return { error };
+  }
+};
