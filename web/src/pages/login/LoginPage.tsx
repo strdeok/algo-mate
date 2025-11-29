@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,21 +10,8 @@ import {
 } from "react-icons/ai";
 import { LoginSchema, type Login } from "../../types/user";
 import { githubLogin, login } from "../../api/auth";
-import { supabase } from "../../api/supabase";
 
 export default function LoginPage() {
-  useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (user) {
-        navigate("/overview");
-      }
-    };
-    checkUser();
-  }, []);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -41,7 +28,7 @@ export default function LoginPage() {
 
   const onSubmit = (data: Login) => {
     login(data.email, data.password).then((res) => {
-      if (res?.data?.user) {
+      if (res?.data) {
         navigate("/overview");
       } else alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
     });
@@ -56,6 +43,8 @@ export default function LoginPage() {
         alert("GitHub 로그인에 실패했습니다.");
       });
   };
+
+  
 
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-8 my-4">

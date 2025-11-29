@@ -7,7 +7,7 @@ export const login = async (email: string, password: string) => {
       password,
     });
     return response;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -19,7 +19,7 @@ export const signup = async (email: string, password: string) => {
       password,
     });
     return response;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -33,7 +33,7 @@ export const githubLogin = async () => {
       },
     });
     return response;
-  } catch (error) {
+  } catch {
     return null;
   }
 };
@@ -42,7 +42,7 @@ export const logout = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     return { error };
-  } catch (error) {
-    return { error };
+  } catch {
+    return null;
   }
 };
