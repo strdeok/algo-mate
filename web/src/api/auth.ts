@@ -1,4 +1,5 @@
 import { supabase } from "./supabase";
+import { AuthError } from "@supabase/supabase-js";
 
 export const login = async (email: string, password: string) => {
   try {
@@ -42,7 +43,7 @@ export const logout = async () => {
   try {
     const { error } = await supabase.auth.signOut();
     return { error };
-  } catch {
-    return null;
+  } catch (error) {
+    return {error: error as AuthError};
   }
 };
