@@ -11,3 +11,9 @@ body {
   font-family: "Jeju Gothic", sans-serif;
   font-size: 18px;
 }
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-filter backdrop-blur-lg rounded-xl border border-text-sub;
+  }
+}
