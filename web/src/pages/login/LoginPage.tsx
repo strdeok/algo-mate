@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,9 +9,22 @@ import {
   AiOutlineEyeInvisible,
 } from "react-icons/ai";
 import { LoginSchema, type Login } from "../../types/user";
-import { login } from "../../api/auth";
+import { githubLogin, login } from "../../api/auth";
+import { supabase } from "../../api/supabase";
 
 export default function LoginPage() {
+  useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        navigate("/overview");
+      }
+    };
+    checkUser();
+  }, []);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -27,12 +40,20 @@ export default function LoginPage() {
   };
 
   const onSubmit = (data: Login) => {
-    login(data.email, data.password)
-      .then((res) => {
-        if (res?.data?.user) {
-          navigate("/overview");
-        } else
-          alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    login(data.email, data.password).then((res) => {
+      if (res?.data?.user) {
+        navigate("/overview");
+      } else alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
+    });
+  };
+
+  const handleGithubLogin = () => {
+    githubLogin()
+      .then(() => {
+        navigate("/overview");
+      })
+      .catch(() => {
+        alert("GitHub 로그인에 실패했습니다.");
       });
   };
 
@@ -109,7 +130,10 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <button className="flex flex-row justify-center items-center py-2.5 rounded-lg gap-2 w-full bg-black cursor-pointer">
+          <button
+            onClick={handleGithubLogin}
+            className="flex flex-row justify-center items-center py-2.5 rounded-lg gap-2 w-full bg-black cursor-pointer"
+          >
             <AiFillGithub color="white" size={24} />
             GitHub로 로그인
           </button>
