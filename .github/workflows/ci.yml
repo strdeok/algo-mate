@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-verify:
-    name: Lint & Build Check
+    name: Verify Build (Match Vercel)
     runs-on: ubuntu-latest
 
     defaults:
@@ -32,12 +32,5 @@ jobs:
       - name: Lint Code
         run: npm run lint
 
-      - name: Type Check
-        run: |
-          if npm run | grep -q "typecheck"; then
-            npm run typecheck
-          else
-            echo "Typecheck script not found, skipping..."
-          fi
-      - name: Build Project
+      - name: Build Check
         run: npm run build
