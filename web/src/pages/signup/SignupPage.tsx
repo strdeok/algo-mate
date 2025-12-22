@@ -31,14 +31,19 @@ export default function SignupPage() {
     setShowPasswordConfirm(!showPasswordConfirm);
   };
 
-  const onSubmit = (data: Signup) => {
-    signup(data.email, data.password).then((res) => {
-      if (res?.data?.user) {
-        alert("인증 메일을 발송했습니다. 이메일을 확인해주세요.");
-        navigate("/login");
-      } else
-        alert("회원가입에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
-    });
+  const onSubmit = async (data: Signup) => {
+    const res = await signup(data.email, data.password)
+    if (res.error){
+      alert("오류가 발생하였습니다. 잠시후 다시 시도해주세요.")
+    }
+    if (res.data.user?.identities?.length == 0){
+      alert("이미 가입된 유저입니다")
+    }
+    
+    if (res.data.user){
+      alert("가입 인증 메일이 발송되었습니다. 메일을 확인해주세요.")
+      navigate("/login")
+    }
   };
 
   const handleGithubLogin = () => {
@@ -46,7 +51,7 @@ export default function SignupPage() {
       if (res?.data?.url) {
         console.log(res.data.url);
       } else
-        alert("GitHub 로그인에 실패했습니다.");
+        alert("GitHub 회원가입에 실패했습니다.");
     });
   };
 
