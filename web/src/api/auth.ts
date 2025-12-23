@@ -8,8 +8,11 @@ export const login = async (email: string, password: string) => {
       password,
     });
     return response;
-  } catch {
-    return null;
+  } catch (error) {
+    return {
+      data: { user: null, session: null },
+      error: error as AuthError,
+    };
   }
 };
 
@@ -20,8 +23,11 @@ export const signup = async (email: string, password: string) => {
       password,
     });
     return response;
-  } catch {
-    return null;
+  } catch (error) {
+    return {
+      data: { user: null, session: null },
+      error: error as AuthError,
+    };
   }
 };
 
@@ -44,6 +50,6 @@ export const logout = async () => {
     const { error } = await supabase.auth.signOut();
     return { error };
   } catch (error) {
-    return {error: error as AuthError};
+    return { error: error as AuthError };
   }
 };

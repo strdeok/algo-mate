@@ -9,7 +9,6 @@ export default function OverviewPage() {
     if (error) {
       alert("로그아웃 중 문제가 발생했습니다.");
     } else {
-      console.log(error);
       navigate("/login");
     }
   };

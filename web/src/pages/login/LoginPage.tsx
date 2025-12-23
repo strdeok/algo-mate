@@ -26,12 +26,17 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
-  const onSubmit = (data: Login) => {
-    login(data.email, data.password).then((res) => {
-      if (res?.data) {
-        navigate("/overview");
-      } else alert("로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.");
-    });
+  const onSubmit = async (data: Login) => {
+    const res = await login(data.email, data.password);
+
+    switch (res.error?.status) {
+      case 400:
+        alert("이메일과 비밀번호를 확인해주세요.");
+    }
+
+    if (res.data.user) {
+      navigate("/overview");
+    }
   };
 
   const handleGithubLogin = () => {
@@ -43,8 +48,6 @@ export default function LoginPage() {
         alert("GitHub 로그인에 실패했습니다.");
       });
   };
-
-  
 
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-8 my-4">
