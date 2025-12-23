@@ -32,26 +32,24 @@ export default function SignupPage() {
   };
 
   const onSubmit = async (data: Signup) => {
-    const res = await signup(data.email, data.password)
-    if (res.error){
-      alert("오류가 발생하였습니다. 잠시후 다시 시도해주세요.")
+    const res = await signup(data.email, data.password);
+    if (res.error) {
+      alert("오류가 발생하였습니다. 잠시후 다시 시도해주세요.");
     }
-    if (res.data.user?.identities?.length == 0){
-      alert("이미 가입된 유저입니다")
+    if (res.data.user?.identities?.length == 0) {
+      alert("이미 가입된 유저입니다");
     }
-    
-    if (res.data.user){
-      alert("가입 인증 메일이 발송되었습니다. 메일을 확인해주세요.")
-      navigate("/login")
+
+    if (res.data.user) {
+      alert("가입 인증 메일이 발송되었습니다. 메일을 확인해주세요.");
+      navigate("/login");
     }
   };
 
   const handleGithubLogin = () => {
     githubLogin().then((res) => {
       if (res?.data?.url) {
-        console.log(res.data.url);
-      } else
-        alert("GitHub 회원가입에 실패했습니다.");
+      } else alert("GitHub 회원가입에 실패했습니다.");
     });
   };
 
@@ -149,7 +147,10 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <button onClick={handleGithubLogin} className="flex flex-row justify-center items-center py-2.5 rounded-lg gap-2 w-full bg-black cursor-pointer">
+          <button
+            onClick={handleGithubLogin}
+            className="flex flex-row justify-center items-center py-2.5 rounded-lg gap-2 w-full bg-black cursor-pointer"
+          >
             <AiFillGithub color="white" size={24} />
             GitHub로 가입하기
           </button>
