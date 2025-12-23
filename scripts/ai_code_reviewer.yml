@@ -1,0 +1,32 @@
+name: AI Code Reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize] # PR 생성되거나, 추가 커밋이 있을 때 동작
+
+permissions:
+  contents: read
+  pull-requests: write # PR에 댓글을 달 권한 필요
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install google-generativeai PyGithub
+
+      - name: Run AI Review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 깃허브 기본 제공 토큰
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} # 직접 설정한 키
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: python scripts/ai_review.py
