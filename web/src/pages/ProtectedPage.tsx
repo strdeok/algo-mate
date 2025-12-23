@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getUserSession } from "../api/getUserSession";
+import Header from "../components/Header";
 
 export default function ProtectedPage() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   useEffect(() => {
     const checkSession = async () => {
       const isLogin = await getUserSession();
@@ -14,5 +15,10 @@ export default function ProtectedPage() {
     checkSession();
   }, []);
 
-  return <Outlet />;
+  return (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  );
 }
