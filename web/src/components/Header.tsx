@@ -3,11 +3,13 @@ import { getUserStatus } from "../api/solvedacAPI";
 import { useEffect, useState } from "react";
 import { AiOutlineDown } from "react-icons/ai";
 import { logout } from "../api/auth";
+import { useExtensionCheck } from "../hooks/useExtensionCheck";
 
 export default function Header() {
   const [userTier, setUserTier] = useState(-1);
   const [userImage, setUserImage] = useState("");
   const [isDropdownActivate, setIsDropdownActivate] = useState(false);
+  const isInstalled = useExtensionCheck();
 
   const location = useLocation();
   const nowLocation = location.pathname;
@@ -73,7 +75,9 @@ export default function Header() {
       <div className="relative flex flex-row gap-6">
         <div className="size-12 bg-white rounded-full relative">
           <div
-            className={`size-4 bg-danger rounded-full absolute bottom-0 right-0`}
+            className={`size-4 ${
+                isInstalled ? "bg-primary" : "bg-danger"
+              } rounded-full absolute bottom-0 right-0`}
           />
         </div>
         <img
@@ -99,8 +103,12 @@ export default function Header() {
         {/* 드롭다운 메뉴 */}
         {isDropdownActivate && (
           <div className="absolute top-16 right-0 bg-surface border border-text-sub rounded-sm w-48 h-64 flex flex-col items-center justify-between text-sm">
-            <button className="border-b cursor-pointer w-full h-full border-b-text-sub">
-              익스텐션 설치
+            <button
+              className={`border-b cursor-pointer w-full h-full border-b-text-sub ${
+                isInstalled ? "text-primary" : "text-danger"
+              }`}
+            >
+              {isInstalled ? "익스텐션 활성화" : "익스텐션 설치 필요"}
             </button>
             <button className="border-b cursor-pointer w-full h-full border-b-text-sub">
               목표 설정

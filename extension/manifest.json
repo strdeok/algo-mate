@@ -11,10 +11,19 @@
     "type": "module"
   },
   "permissions": ["storage"],
-  "host_permissions": ["https://www.acmicpc.net/*", "https://solved.ac/*"],
+  "host_permissions": [
+    "https://www.acmicpc.net/*",
+    "https://solved.ac/*",
+    "https://algo-mate-ten.vercel.app/*",
+    "http://localhost:5173/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["https://www.acmicpc.net/status*"],
+      "matches": [
+        "https://www.acmicpc.net/status*",
+        "https://algo-mate-ten.vercel.app/*",
+        "http://localhost:5173/*"
+      ],
       "js": ["content.js"]
     }
   ]
