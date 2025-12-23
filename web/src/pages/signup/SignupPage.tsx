@@ -46,11 +46,8 @@ export default function SignupPage() {
     }
   };
 
-  const handleGithubLogin = () => {
-    githubLogin().then((res) => {
-      if (res?.data?.url) {
-      } else alert("GitHub 회원가입에 실패했습니다.");
-    });
+  const handleGithubLogin = async () => {
+    await githubLogin()
   };
 
   return (
