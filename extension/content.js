@@ -8,7 +8,6 @@ if (currentUrl.includes("localhost") || currentUrl.includes("algo-mate")) {
     flag.id = "algo-mate-installed";
     flag.style.display = "none";
     document.body.appendChild(flag);
-    console.log("Algo-Mate Extension Detected!");
   }
 } 
 // ✅ Case 2: 백준 사이트인 경우 -> 오답 수집 로직 실행

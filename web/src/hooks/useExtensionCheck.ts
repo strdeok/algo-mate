@@ -1,4 +1,3 @@
-// web/src/hooks/useExtensionCheck.ts
 import { useState, useEffect } from "react";
 
 export const useExtensionCheck = () => {
