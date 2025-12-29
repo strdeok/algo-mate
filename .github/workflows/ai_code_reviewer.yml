@@ -51,7 +51,7 @@ jobs:
           def analyze_code(diff_content):
               # [수정 완료] 로그에서 확인된 'models/gemini-2.0-flash' 사용
               # 1.5보다 훨씬 빠르고 똑똑한 최신 모델입니다.
-              model = genai.GenerativeModel('models/gemini-2.0-flash')
+              model = genai.GenerativeModel('models/gemini-2.0-flash-exp')
               
               full_prompt = f"""
               당신은 토스(Toss)의 'Frontend Chapter Lead'입니다.
