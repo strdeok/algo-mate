@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11' # 호환성이 가장 좋은 3.11 사용
+          python-version: '3.11'
 
       - name: Install Dependencies
         run: |
@@ -39,7 +39,7 @@ jobs:
           import google.generativeai as genai
           from github import Github, Auth
 
-          # 1. 환경 변수 로드
+          # 1. 초기 설정
           repo_token = os.getenv('GITHUB_TOKEN')
           gemini_api_key = os.getenv('GEMINI_API_KEY')
           repo_name = os.getenv('REPO_NAME')
@@ -49,20 +49,22 @@ jobs:
           genai.configure(api_key=gemini_api_key)
 
           def analyze_code(diff_content):
-              # 404 에러 방지를 위한 전체 경로 지정 및 모델 선언
-              model = genai.GenerativeModel(model_name='models/gemini-1.5-flash')
+              # 404 에러 방지: 가장 호환성이 높은 모델 명칭 사용
+              # 내부적으로 v1beta 경로로 빠지는 것을 방지하기 위해 
+              # GenerativeModel 생성 시 불필요한 인자를 모두 제거했습니다.
+              model = genai.GenerativeModel('gemini-1.5-flash')
               
-              # 역할 및 지침을 프롬프트에 직접 포함 (v1beta 이슈 회피)
               full_prompt = f"""
               당신은 토스(Toss)의 'Frontend Chapter Lead'입니다.
-              가독성, 예측 가능성, 응집도, 결합도 4가지 기준으로 코드를 리뷰합니다.
-              개선이 필요한 부분만 정중하게 한국어로 답변하세요. 구체적인 코드 예시를 포함하면 좋습니다.
+              가독성, 예측 가능성, 응집도, 결합도를 기준으로 리뷰하며 정중한 한국어로 답변하세요.
+              개선이 필요한 부분에 대해 구체적인 코드 예시를 포함하여 제안해 주세요.
 
-              [Changes to Review]
+              [리뷰할 코드 변경점]
               {diff_content}
               """
               
-              response = model.generate_content(full_prompt)
+              # contents 인자를 명시적으로 사용하여 호출의 안정성을 높임
+              response = model.generate_content(contents=full_prompt)
               return response.text
 
           # 3. 메인 실행 로직
@@ -72,23 +74,25 @@ jobs:
               repo = g.get_repo(repo_name)
               pr = repo.get_pull(pr_number)
 
+              print(f"Checking PR #{pr_number} in {repo_name}...")
+
               diffs = []
               for file in pr.get_files():
-                  # 프론트엔드 관련 파일 확장자 체크
                   if file.filename.endswith(('.js', '.jsx', '.ts', '.tsx', '.css', '.scss', '.html')):
                       patch = file.patch if file.patch else "No content"
-                      diffs.append(f"File: {file.filename}\nDiff:\n{patch[:2000]}\n")
+                      diffs.append(f"파일명: {file.filename}\n변경사항:\n{patch[:2000]}\n")
 
               if not diffs:
-                  print("No frontend changes to review.")
+                  print("리뷰할 프론트엔드 변경 사항이 없습니다.")
               else:
-                  print("Sending data to Gemini...")
+                  print("Gemini API 분석 요청 중...")
                   review_result = analyze_code("\n".join(diffs))
                   
-                  print("Posting comment to PR...")
+                  print("PR 댓글 작성 중...")
                   pr.create_issue_comment(review_result)
-                  print("Review posted successfully!")
+                  print("리뷰 완료!")
 
           except Exception as e:
-              print(f"Error: {e}")
+              # 에러 발생 시 상세 내용을 출력하여 추적 가능하게 함
+              print(f"에러 발생 상세: {str(e)}")
               sys.exit(1)
