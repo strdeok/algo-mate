@@ -1,19 +1,19 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getUserStatus } from "../api/solvedacAPI";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AiOutlineDown } from "react-icons/ai";
 import { logout } from "../api/auth";
 import { useExtensionCheck } from "../hooks/useExtensionCheck";
+import { useUserStatus } from "../hooks/useUserStatus";
 
 export default function Header() {
-  const [userTier, setUserTier] = useState(-1);
-  const [userImage, setUserImage] = useState("");
-  const [isDropdownActivate, setIsDropdownActivate] = useState(false);
-  const isInstalled = useExtensionCheck();
-
   const location = useLocation();
   const nowLocation = location.pathname;
   const navigate = useNavigate();
+
+  const { data: user, isLoading, isError } = useUserStatus();
+  const [isDropdownActivate, setIsDropdownActivate] = useState(false);
+
+  const isInstalled = useExtensionCheck();
 
   const handleLogout = async () => {
     const { error } = await logout();
@@ -24,18 +24,13 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {
-    const getUser = async () => {
-      const res = await getUserStatus();
-      setUserTier(res.tier);
-      setUserImage(res.profileImageUrl);
-    };
-    getUser();
-  }, []);
-
   const nav_style =
     "h-full rounded-full flex-1 flex flex-col items-center justify-center";
 
+  if (isLoading) return <div>Loading...</div>;
+
+  if (isError) return <div>에러가 발생했습니다.</div>;
+  
   return (
     <header className="w-full p-4 flex flex-row justify-between items-center">
       {/* 서비스 이름 */}
@@ -73,18 +68,28 @@ export default function Header() {
 
       {/* 유저 status */}
       <div className="relative flex flex-row gap-6">
-        <div className="size-12 bg-white rounded-full relative">
+        <div className="size-12 relative">
+          <img
+            src={
+              user.profileImageUrl
+                ? user.profileImageUrl
+                : "https://images.icon-icons.com/3446/PNG/512/profile_user_avatar_people_icon_219228.png"
+            }
+            alt="user-profile-image"
+            className="rounded-full border-2 border-surface"
+          />
+
           <div
             className={`size-4 ${
-                isInstalled ? "bg-primary" : "bg-danger"
-              } rounded-full absolute bottom-0 right-0`}
+              isInstalled ? "bg-primary" : "bg-danger"
+            } rounded-full absolute bottom-0 right-0 z-30`}
           />
         </div>
         <img
           alt="tier"
-          src={`https://static.solved.ac/tier_small/${userTier}.svg`}
+          src={`https://static.solved.ac/tier_small/${user.tier}.svg`}
           className="size-12"
-        ></img>
+        />
         <button
           className="w-11 cursor-pointer"
           onClick={() => {
@@ -102,7 +107,7 @@ export default function Header() {
 
         {/* 드롭다운 메뉴 */}
         {isDropdownActivate && (
-          <div className="absolute top-16 right-0 bg-surface border border-text-sub rounded-sm w-48 h-64 flex flex-col items-center justify-between text-sm">
+          <div className="absolute top-16 right-0 bg-surface border border-text-sub rounded-sm w-48 h-64 flex flex-col items-center justify-between text-sm z-10">
             <button
               className={`border-b cursor-pointer w-full h-full border-b-text-sub ${
                 isInstalled ? "text-primary" : "text-danger"

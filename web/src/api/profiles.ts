@@ -1,4 +1,3 @@
-import { authStore } from "../store/authStore";
 import { supabase } from "./supabase";
 
 export interface Profile {
@@ -9,8 +8,6 @@ export interface Profile {
 }
 
 export const getProfile = async (supabase_id: string) => {
-  const { setUuid } = authStore.getState();
-  setUuid(supabase_id);
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
@@ -18,6 +15,5 @@ export const getProfile = async (supabase_id: string) => {
     .single();
 
   if (error) throw error;
-  setUuid(data.id)
   return data as Profile;
 };

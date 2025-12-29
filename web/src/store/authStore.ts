@@ -1,19 +1,17 @@
 import { create } from "zustand";
 
-interface authStoreInterface {
-  uuid: string | undefined;
-  setUuid: (uuid: string | undefined) => void;
-  baekjoon_id: string | undefined;
-  setBaekjoon_id: (baekjoon_id: string | undefined) => void;
+interface AuthState {
+  isInitialized: boolean;
   supabase_id: string | undefined;
-  setSupabase_id: (supabase_id: string | undefined) => void;
+  baekjoon_id: string | undefined;
+  setAuth: (ids: { supabase_id?: string; baekjoon_id?: string }) => void;
+  resetAuth: () => void;
 }
 
-export const authStore = create<authStoreInterface>((set) => ({
-  uuid: "",
-  baekjoon_id: "",
-  supabase_id: "",
-  setUuid: (uuid) => set({ uuid }),
-  setBaekjoon_id: (baekjoon_id) => set({ baekjoon_id }),
-  setSupabase_id: (supabase_id) => set({ supabase_id }),
+export const authStore = create<AuthState>((set) => ({
+  isInitialized: false,
+  supabase_id: undefined,
+  baekjoon_id: undefined,
+  setAuth: (ids) => set((state) => ({ ...state, ...ids, isInitialized: true })),
+  resetAuth: () => set({ supabase_id: undefined, baekjoon_id: undefined, isInitialized: true }),
 }));
