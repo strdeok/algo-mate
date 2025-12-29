@@ -1,18 +1,16 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { getUserSession } from "../api/getUserSession";
+import { authStore } from "../store/authStore";
 
 export default function PublicPage() {
   const navigate = useNavigate();
+  const { supabase_id, isInitialized } = authStore();
+
   useEffect(() => {
-    const checkSession = async () => {
-      const isLogin = await getUserSession();
-      if (isLogin) {
-        navigate("/overview", { replace: true });
-      }
-    };
-    checkSession();
-  }, []);
+    if (supabase_id) {
+      navigate("/overview", { replace: true });
+    }
+  }, [isInitialized, supabase_id]);
 
   return <Outlet />;
 }
