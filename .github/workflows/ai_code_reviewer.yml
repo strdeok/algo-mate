@@ -3,7 +3,7 @@ name: AI Code Reviewer
 on:
   pull_request:
     types: [opened, synchronize]
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -19,12 +19,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10' # 3.9 버전의 호환성 문제를 해결하기 위해 업그레이드
+          python-version: "3.11" # 호환성이 가장 좋은 3.11 사용
 
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install google-generativeai PyGithub
+          pip install --no-cache-dir google-generativeai PyGithub
 
       - name: Run AI Review
         env:
@@ -35,55 +35,60 @@ jobs:
         shell: python
         run: |
           import os
+          import sys
           import google.generativeai as genai
-          from github import Github, Auth # 최신 인증 방식 도입
+          from github import Github, Auth
 
-          # 환경 변수 로드
+          # 1. 환경 변수 로드
           repo_token = os.getenv('GITHUB_TOKEN')
           gemini_api_key = os.getenv('GEMINI_API_KEY')
           repo_name = os.getenv('REPO_NAME')
           pr_number = int(os.getenv('PR_NUMBER'))
 
-          # Gemini 설정
+          # 2. Gemini 설정
           genai.configure(api_key=gemini_api_key)
 
-          SYSTEM_INSTRUCTION = """
-          당신은 토스(Toss)의 'Frontend Chapter Lead'입니다.
-          가독성, 예측 가능성, 응집도, 결합도 4가지 기준으로 코드를 리뷰합니다.
-          개선이 필요한 부분만 정중하게 한국어로 답변하세요.
-          """
-
           def analyze_code(diff_content):
-              # 모델 명칭에서 발생하던 404 에러를 방지하기 위한 설정
-              model = genai.GenerativeModel(
-                  model_name="gemini-1.5-flash"
-              )
-              # system_instruction 대신 프롬프트에 역할을 포함시켜 더 안정적으로 호출
-              full_prompt = f"{SYSTEM_INSTRUCTION}\n\n아래 코드를 리뷰해줘:\n{diff_content}"
+              # 404 에러 방지를 위한 전체 경로 지정 및 모델 선언
+              model = genai.GenerativeModel(model_name='models/gemini-1.5-flash')
+              
+              # 역할 및 지침을 프롬프트에 직접 포함 (v1beta 이슈 회피)
+              full_prompt = f"""
+              당신은 토스(Toss)의 'Frontend Chapter Lead'입니다.
+              가독성, 예측 가능성, 응집도, 결합도 4가지 기준으로 코드를 리뷰합니다.
+              개선이 필요한 부분만 정중하게 한국어로 답변하세요. 구체적인 코드 예시를 포함하면 좋습니다.
+
+              [Changes to Review]
+              {diff_content}
+              """
+              
               response = model.generate_content(full_prompt)
               return response.text
 
+          # 3. 메인 실행 로직
           try:
-              # PyGithub 최신 인증 방식 (DeprecationWarning 해결)
               auth = Auth.Token(repo_token)
               g = Github(auth=auth)
               repo = g.get_repo(repo_name)
               pr = repo.get_pull(pr_number)
 
-              # 변경된 파일 가져오기
               diffs = []
               for file in pr.get_files():
-                  if file.filename.endswith(('.js', '.jsx', '.ts', '.tsx', '.css')):
-                      patch = file.patch if file.patch else ""
-                      diffs.append(f"File: {file.filename}\n{patch[:2000]}")
+                  # 프론트엔드 관련 파일 확장자 체크
+                  if file.filename.endswith(('.js', '.jsx', '.ts', '.tsx', '.css', '.scss', '.html')):
+                      patch = file.patch if file.patch else "No content"
+                      diffs.append(f"File: {file.filename}\nDiff:\n{patch[:2000]}\n")
 
               if not diffs:
                   print("No frontend changes to review.")
               else:
+                  print("Sending data to Gemini...")
                   review_result = analyze_code("\n".join(diffs))
+                  
+                  print("Posting comment to PR...")
                   pr.create_issue_comment(review_result)
                   print("Review posted successfully!")
 
           except Exception as e:
               print(f"Error: {e}")
-              exit(1)
+              sys.exit(1)
