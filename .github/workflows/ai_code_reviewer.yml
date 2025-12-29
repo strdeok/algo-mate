@@ -49,9 +49,10 @@ jobs:
           genai.configure(api_key=gemini_api_key)
 
           def analyze_code(diff_content):
-              # [수정 완료] 로그에서 확인된 'models/gemini-2.0-flash' 사용
-              # 1.5보다 훨씬 빠르고 똑똑한 최신 모델입니다.
-              model = genai.GenerativeModel('models/gemini-2.0-flash-exp')
+              # [최종 수정] 로그에서 확인된 '사용 가능 모델' 사용
+              # 'gemini-flash-latest'는 1.5 Flash 모델의 별칭(Alias)으로,
+              # 무료 플랜 사용자에게 가장 안정적인 할당량을 제공합니다.
+              model = genai.GenerativeModel('models/gemini-flash-latest')
               
               full_prompt = f"""
               당신은 토스(Toss)의 'Frontend Chapter Lead'입니다.
@@ -83,7 +84,7 @@ jobs:
               if not diffs:
                   print("리뷰할 프론트엔드 변경 사항이 없습니다.")
               else:
-                  print("Gemini 2.0 Flash에게 분석 요청 중...")
+                  print("Gemini Flash(Latest)에게 분석 요청 중...")
                   review_result = analyze_code("\n".join(diffs))
                   
                   print("PR 댓글 작성 중...")
