@@ -3,7 +3,7 @@ name: AI Code Reviewer
 on:
   pull_request:
     types: [opened, synchronize]
-    branches: ["main"]
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.11" # 호환성이 가장 좋은 3.11 사용
+          python-version: '3.11' # 호환성이 가장 좋은 3.11 사용
 
       - name: Install Dependencies
         run: |
