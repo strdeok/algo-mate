@@ -33,7 +33,16 @@ const TIER_RATINGS = [
   3500, // 31: Master
 ];
 
-export const extractUserInfo = (userData: any) => {
+export const extractUserInfo = ({
+  userData,
+}: {
+  userData: {
+    handle: string;
+    solvedCount: number;
+    tier: number;
+    rating: number;
+  };
+}) => {
   // 이름
   const handle = userData.handle;
 
