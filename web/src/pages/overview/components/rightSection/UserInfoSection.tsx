@@ -6,7 +6,14 @@ export default function UserInfoSection() {
 
   if (isLoading) return <div>로딩중...</div>;
   if (error) return <div>에러가 발생했습니다.</div>;
-  const userData = extractUserInfo(data);
+
+  if (!data) {
+    return (
+      <div className="w-full h-full text-center">사용자 정보가 없습니다.</div>
+    );
+  }
+
+  const userData = extractUserInfo({ userData: data });
 
   return (
     <div className="flex flex-row items-center gap-6 p-4 w-full h-full">

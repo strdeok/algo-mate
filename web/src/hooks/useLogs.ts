@@ -4,7 +4,7 @@ import { authStore } from "../store/authStore";
 
 // log 가져오기
 export const useWeeklyStats = () => {
-    const { baekjoon_id: uuid} = authStore()
+    const { supabase_id: uuid} = authStore()
 
   return useQuery({
     queryKey: ["weeklyLogs", uuid],
