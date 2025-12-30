@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import FirstPage from "./pages/first/FirstPage.tsx";
 import LoginPage from "./pages/login/LoginPage.tsx";
 import SignupPage from "./pages/signup/SignupPage.tsx";
@@ -14,7 +14,6 @@ import { supabase } from "./api/supabase.ts";
 import { getProfile } from "./api/profiles.ts";
 
 function App() {
-  const navigate = useNavigate()
   const { setAuth, resetAuth } = authStore();
 
   useEffect(() => {
