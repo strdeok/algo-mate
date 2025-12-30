@@ -8,8 +8,33 @@ import ReportPage from "./pages/report/ReportPage.tsx";
 import { AnimatePresence } from "framer-motion";
 import ProtectedPage from "./pages/ProtectedPage.tsx";
 import PublicPage from "./pages/PublicPage.tsx";
+import { authStore } from "./store/authStore.ts";
+import { useEffect } from "react";
+import { supabase } from "./api/supabase.ts";
+import { getProfile } from "./api/profiles.ts";
 
 function App() {
+  const { setAuth, resetAuth } = authStore();
+
+  useEffect(() => {
+    const initAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (session) {
+        const profile = await getProfile(session.user.id);
+        setAuth({
+          supabase_id: session.user.id,
+          baekjoon_id: profile.baekjoon_id || undefined,
+        });
+      } else {
+        resetAuth();
+      }
+    };
+    initAuth();
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <Routes>
