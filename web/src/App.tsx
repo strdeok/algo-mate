@@ -34,7 +34,7 @@ function App() {
       }
     };
     initAuth();
-  }, [navigate]);
+  }, []);
 
   return (
     <AnimatePresence mode="wait">
